@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Catalogo de productos{% endblock %}
+<!-- Section-->
+{% block content %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category,message in messages %}
+        <div class="alert alert-{{category}}">{{message}}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div id="center-container" style="text-align: center;">
+    <div id="cartItems">
+        <h2>Tus Productos Seleccionados</h2>
+        <div id="tableItems">
+        {% for row in productos %}
+            <div class="product-row">
+            <hr id="seperator">
+            <div id="itemImage">
+                <img src={{row[4]}} id="image" />
+            </div>
+            <div id="itemName">
+                <span id="itemNameTag">{{row[2]}}</span>
+            </div>
+            <div id="itemDetails">
+                <form action="/editarCantidad" method="POST" class="edit-form">
+                    <input type="number" name="cantidad" value="{{row[5]}}" min="1" required class="quantity-input" data-kartid="{{row[0]}}" style="width: 50px;">
+                    <input type="hidden" name="kartId" value="{{row[0]}}">
+                </form>
+                
+            </div><br>
+            
+                <a href="/removeFromCart?kartId={{row[0]}}" class="btn btn-danger">Eliminar</a><br><br>
+           
+            
+            
+
+            <div id="itemPrice">
+                ${{row[6]}}
+            </div>
+
+        </div><br>
+        {% endfor %}
+        <hr id="seperator">
+        <div id="total">
+            <span id="subtotal">Subtotal</span> : ${{precio_total}}
+        </div>
+        </div>
+    </div>
+    {% if itms_carrito > 0 %}
+        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+        <div class="text-center">
+            <a class="btn btn-outline-dark mt-auto" href="{{url_for('compras.comprar')}}">Comprar</a>
+        </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var quantityInputs = document.querySelectorAll('.quantity-input');
+
+        quantityInputs.forEach(function(input) {
+            input.addEventListener('input', function() {
+                // Obtener el kartId y el formulario asociado
+                var kartId = input.dataset.kartid;
+                var form = input.closest('.edit-form');
+
+                // Enviar el formulario automáticamente al cambiar la cantidad
+                form.submit();
+            });
+        });
+    });
+</script>
+
+{% endblock %}
